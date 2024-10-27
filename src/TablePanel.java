@@ -30,7 +30,6 @@ public class TablePanel extends JPanel {
         populateTable(incidents);
     }
 
-    // Add this method to expose the JTable
     public JTable getTable() {
         return table;
     }
