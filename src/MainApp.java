@@ -34,25 +34,25 @@ public class MainApp extends JFrame {
         add(chartPanel, BorderLayout.EAST);
         add(detailsPanel, BorderLayout.SOUTH);
 
-        // Create filter panel with checkboxes and toggle button for filtering incidents
+        // Create filter panel with checkboxes for filtering incidents
         JPanel filterPanel = new JPanel();
         JCheckBox eveningShiftFilter = new JCheckBox("Show Evening Incidents Only");
         JCheckBox theftFilter = new JCheckBox("Show Theft Incidents Only");
-        JToggleButton dateSortToggle = new JToggleButton("Sort by Date Descending");
+        JCheckBox methodFilter = new JCheckBox("Show Gun Incidents Only");  // New filter for "GUN" method
 
         filterPanel.add(eveningShiftFilter);
         filterPanel.add(theftFilter);
-        filterPanel.add(dateSortToggle);
+        filterPanel.add(methodFilter);
         add(filterPanel, BorderLayout.SOUTH);
 
-        // Add listeners to apply filters when checkboxes or toggle button are selected
-        eveningShiftFilter.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), dateSortToggle.isSelected()));
-        theftFilter.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), dateSortToggle.isSelected()));
-        dateSortToggle.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), dateSortToggle.isSelected()));
+        // Add listeners to apply filters when checkboxes are selected
+        eveningShiftFilter.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), methodFilter.isSelected()));
+        theftFilter.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), methodFilter.isSelected()));
+        methodFilter.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), methodFilter.isSelected()));
     }
 
     // Method to apply filters and update the data displayed in the panels
-    private void applyFilters(boolean eveningShiftOnly, boolean theftOnly, boolean sortByDateDescending) {
+    private void applyFilters(boolean eveningShiftOnly, boolean theftOnly, boolean gunIncidentsOnly) {
         List<CrimeIncident> filteredIncidents = incidents;
 
         // Filter incidents based on the evening shift checkbox
@@ -69,10 +69,10 @@ public class MainApp extends JFrame {
                     .collect(Collectors.toList());
         }
 
-        // Sort incidents by date in descending order if the toggle is selected
-        if (sortByDateDescending) {
+        // New filter: Filter incidents based on the "GUN" method
+        if (gunIncidentsOnly) {
             filteredIncidents = filteredIncidents.stream()
-                    .sorted(Comparator.comparing(CrimeIncident::getReportDate).reversed())
+                    .filter(incident -> "GUN".equals(incident.getMethod()))
                     .collect(Collectors.toList());
         }
 
