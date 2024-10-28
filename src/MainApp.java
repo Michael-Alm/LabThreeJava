@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,40 +33,41 @@ public class MainApp extends JFrame {
 
         // Filters
         JPanel filterPanel = new JPanel();
-        JCheckBox shiftFilter = new JCheckBox("Show Evening Incidents Only");
-        JCheckBox offenseFilter = new JCheckBox("Show Theft Incidents Only");
-        JCheckBox bidFilter = new JCheckBox("Show Downtown BID Only");
+        JCheckBox eveningShiftFilter = new JCheckBox("Show Evening Incidents Only");
+        JCheckBox theftFilter = new JCheckBox("Show Theft Incidents Only");
+        JToggleButton dateSortToggle = new JToggleButton("Sort by Date Descending");
 
-        filterPanel.add(shiftFilter);
-        filterPanel.add(offenseFilter);
-        filterPanel.add(bidFilter);
+        filterPanel.add(eveningShiftFilter);
+        filterPanel.add(theftFilter);
+        filterPanel.add(dateSortToggle);
         add(filterPanel, BorderLayout.SOUTH);
 
-        // Apply filters based on the selected checkboxes
-        shiftFilter.addActionListener(e -> applyFilters(shiftFilter.isSelected(), offenseFilter.isSelected(), bidFilter.isSelected()));
-        offenseFilter.addActionListener(e -> applyFilters(shiftFilter.isSelected(), offenseFilter.isSelected(), bidFilter.isSelected()));
-        bidFilter.addActionListener(e -> applyFilters(shiftFilter.isSelected(), offenseFilter.isSelected(), bidFilter.isSelected()));
+        // Apply filters based on the selected checkboxes and toggle
+        eveningShiftFilter.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), dateSortToggle.isSelected()));
+        theftFilter.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), dateSortToggle.isSelected()));
+        dateSortToggle.addActionListener(e -> applyFilters(eveningShiftFilter.isSelected(), theftFilter.isSelected(), dateSortToggle.isSelected()));
     }
 
-    private void applyFilters(boolean shiftOnly, boolean offenseOnly, boolean bidOnly) {
+    private void applyFilters(boolean eveningShiftOnly, boolean theftOnly, boolean sortByDateDescending) {
         List<CrimeIncident> filteredIncidents = incidents;
 
         // Apply filters based on the checkbox selections
-        if (shiftOnly) {
+        if (eveningShiftOnly) {
             filteredIncidents = filteredIncidents.stream()
                     .filter(incident -> "EVENING".equals(incident.getShift()))
                     .collect(Collectors.toList());
         }
 
-        if (offenseOnly) {
+        if (theftOnly) {
             filteredIncidents = filteredIncidents.stream()
                     .filter(incident -> "THEFT/OTHER".equals(incident.getOffense()))
                     .collect(Collectors.toList());
         }
 
-        if (bidOnly) {
+        // Sort by date in descending order if toggle is selected
+        if (sortByDateDescending) {
             filteredIncidents = filteredIncidents.stream()
-                    .filter(incident -> "DOWNTOWN".equals(incident.getBid()))
+                    .sorted(Comparator.comparing(CrimeIncident::getReportDate).reversed())
                     .collect(Collectors.toList());
         }
 
