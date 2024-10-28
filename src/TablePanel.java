@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import java.util.List;
 public class TablePanel extends JPanel {
     private JTable table;
     private DefaultTableModel tableModel;
+    private TableRowSorter<DefaultTableModel> sorter;  // Add sorter for table
 
     // Constructor to initialize the table panel with a list of incidents
     public TablePanel(List<CrimeIncident> incidents) {
@@ -14,6 +16,10 @@ public class TablePanel extends JPanel {
         String[] columnNames = {"Report Date", "Shift", "Method", "Offense", "Block"};
         tableModel = new DefaultTableModel(columnNames, 0); // Initialize table model with column names
         table = new JTable(tableModel);
+
+        // Initialize sorter and set it on the table
+        sorter = new TableRowSorter<>(tableModel);
+        table.setRowSorter(sorter);
 
         populateTable(incidents); // Populate the table with incident data
         add(new JScrollPane(table), BorderLayout.CENTER); // Add the table with scroll functionality
